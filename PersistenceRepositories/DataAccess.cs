@@ -1,29 +1,67 @@
 ﻿using System;
 using Microsoft.Data.Sqlite;
-using System.Collections.Generic;
 using Windows.Storage;
 using System.IO;
 
 namespace PersistenceRepositories
 {
-    public static class DataAccess
+    public class DataAccess
     {
-        public async static void InitializeDatabase()
+        private const string DB_EXTENSION = ".db";
+
+        private readonly string DBName;
+        private SqliteConnection DB;
+
+        public DataAccess(string DBName)
         {
-            await ApplicationData.Current.LocalFolder.CreateFileAsync("ITSIconta.db", CreationCollisionOption.OpenIfExists);
-            string dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "ITSIconta.db");
-            using (SqliteConnection db =
-               new SqliteConnection($"Filename={dbpath}"))
+            this.DBName = DBName + DB_EXTENSION;
+            GetConnection();
+        }
+
+        private void GetConnection()
+        {
+            string DBPath = Path.Combine(ApplicationData.Current.LocalFolder.Path, DBName);
+            DB = new SqliteConnection($"Filename={DBPath}");
+        }
+
+        public async void InitializeDatabase()
+        {
+            await ApplicationData.Current.LocalFolder.CreateFileAsync(DBName, CreationCollisionOption.OpenIfExists);
+            GetConnection();
+        }
+
+        public void UpdateDatabase()
+        {
+            DeleteDBIfExists();
+            InitializeDatabase();
+        }
+
+        public void ExecuteSQLCommand(string SQLCommand)
+        {
+            DB.Open();
+            SqliteCommand command = new SqliteCommand(SQLCommand, DB);
+            command.ExecuteReader();
+            DB.Close();
+        }
+
+        public void ExecuteSQLCommand(SqliteCommand SQLCommand)
+        {
+            DB.Open();
+            SqliteCommand command = new SqliteCommand(SQLCommand, DB);
+            command.ExecuteReader();
+            DB.Close();
+        }
+
+        private async void DeleteDBIfExists()
+        {
+            try
             {
-                db.Open();
-
-                String tableCommand = "CREATE TABLE IF NOT " +
-                    "EXISTS MyTable (Primary_Key INTEGER PRIMARY KEY, " +
-                    "Text_Entry NVARCHAR(2048) NULL)";
-
-                SqliteCommand createTable = new SqliteCommand(tableCommand, db);
-
-                createTable.ExecuteReader();
+                StorageFile DBFile = await ApplicationData.Current.LocalFolder.GetFileAsync(DBName);
+                await DBFile.DeleteAsync();
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine("Database does not exist");
             }
         }
     }

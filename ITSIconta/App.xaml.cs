@@ -31,7 +31,9 @@ namespace ITSIconta
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
-            DataAccess.InitializeDatabase();
+            DataAccess connection = new DataAccess(GlobalContext.DBNAME);
+            GlobalContext.connection = connection;
+            GlobalContext.connection.UpdateDatabase();
         }
 
         /// <summary>
