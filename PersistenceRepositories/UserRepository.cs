@@ -1,31 +1,30 @@
-﻿using System;
+﻿using Entities.User;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Data.Sqlite;
 
 namespace PersistenceRepositories
 {
-    class UserRepository
+    class UserRepository : Repository
     {
-        private const string TABLE_CREATION_COMMAND = "CREATE TABLE IF NOT EXISTS users" +
-                                                    "(" +
-                                                    "user_id INTEGER PRIMARY KEY, " +
-                                                    "userName NVARCHAR(2048) NOT NULL," +
-                                                    "password NVARCHAR(2048) NOT NULL," +
-                                                    "email NVARCHAR(2048) NOT NULL," +
-                                                    "role_Id INTEGER NOT NULL," +
-                                                    "FOREIGN KEY (role_id) " +
-                                                    "REFERENCES roles(role_id)" +
-                                                    ")";
-        private readonly DataAccess dataAccess;
-
-        public UserRepository(DataAccess dataAccess)
+        public UserRepository(DataAccess dataAccess) : base(dataAccess)
         {
-            this.dataAccess = dataAccess;
+            base.TABLE_CREATION_COMMAND = "CREATE TABLE IF NOT EXISTS users" +
+                                        "(" +
+                                        "user_id INTEGER PRIMARY KEY, " +
+                                        "userName NVARCHAR(20) NOT NULL," +
+                                        "password NVARCHAR(20) NOT NULL," +
+                                        "email NVARCHAR(40) NOT NULL," +
+                                        "role_Id INTEGER NOT NULL," +
+                                        "FOREIGN KEY (role_id) " +
+                                        "REFERENCES roles(role_id)" +
+                                        ")";
         }
 
-        public void CreateTable()
+        public User Save(User user)
         {
-            dataAccess.ExecuteSQLCommand(TABLE_CREATION_COMMAND);
+            return user;
         }
     }
 }

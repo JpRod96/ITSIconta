@@ -2,6 +2,7 @@
 using Microsoft.Data.Sqlite;
 using Windows.Storage;
 using System.IO;
+using System.Collections.Generic;
 
 namespace PersistenceRepositories
 {
@@ -28,6 +29,24 @@ namespace PersistenceRepositories
         {
             await ApplicationData.Current.LocalFolder.CreateFileAsync(DBName, CreationCollisionOption.OpenIfExists);
             GetConnection();
+            CreateTables();
+        }
+
+        private void CreateTables()
+        {
+            List<Repository> repositories = InitializedRepositories();
+            foreach(Repository repository in repositories)
+            {
+                repository.CreateTable();
+            }
+        }
+
+        private List<Repository> InitializedRepositories()
+        {
+            List<Repository> repositories = new List<Repository>();
+            repositories.Add(new RoleRepository(this));
+            repositories.Add(new UserRepository(this));
+            return repositories;
         }
 
         public void UpdateDatabase()
@@ -36,20 +55,23 @@ namespace PersistenceRepositories
             InitializeDatabase();
         }
 
-        public void ExecuteSQLCommand(string SQLCommand)
+        public SqliteDataReader ExecuteSQLCommand(string SQLCommand)
         {
+            SqliteDataReader output;
             DB.Open();
             SqliteCommand command = new SqliteCommand(SQLCommand, DB);
-            command.ExecuteReader();
+            output = command.ExecuteReader();
             DB.Close();
+            return output;
         }
 
-        public void ExecuteSQLCommand(SqliteCommand SQLCommand)
+        public SqliteDataReader ExecuteSQLCommand(SqliteCommand SQLCommand)
         {
+            SqliteDataReader output;
             DB.Open();
-            SqliteCommand command = new SqliteCommand(SQLCommand, DB);
-            command.ExecuteReader();
+            output = SQLCommand.ExecuteReader();
             DB.Close();
+            return output;
         }
 
         private async void DeleteDBIfExists()
