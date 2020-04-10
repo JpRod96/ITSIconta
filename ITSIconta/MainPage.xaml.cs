@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Entities.User;
+using PersistenceRepositories;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,9 +24,17 @@ namespace ITSIconta
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private UserRepository userRepository;
         public MainPage()
         {
+            userRepository = new UserRepository(GlobalContext.connection);
             this.InitializeComponent();
+            Example();
+        }
+
+        public void Example()
+        {
+            
         }
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.Data.Sqlite;
 
 namespace PersistenceRepositories
 {
-    class UserRepository : Repository
+    public class UserRepository : Repository
     {
         public UserRepository(DataAccess dataAccess) : base(dataAccess)
         {

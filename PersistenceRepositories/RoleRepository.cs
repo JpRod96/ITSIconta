@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PersistenceRepositories
 {
-    class RoleRepository : Repository
+    public class RoleRepository : Repository
     {
         public RoleRepository(DataAccess dataAccess) : base(dataAccess)
         {
