@@ -8,6 +8,7 @@ namespace PersistenceRepositories
 {
     public class RoleRepository : Repository
     {
+        private const string TABLE_NAME = "roles";
         public RoleRepository(DataAccess dataAccess) : base(dataAccess)
         {
             base.TABLE_CREATION_COMMAND ="CREATE TABLE IF NOT EXISTS roles" +
@@ -23,6 +24,7 @@ namespace PersistenceRepositories
             insertCommand.CommandText = "INSERT INTO roles (name) VALUES (@name);";
             insertCommand.Parameters.AddWithValue("@name", role.Name);
             SqliteDataReader query = dataAccess.ExecuteSQLCommand(insertCommand);
+            int id = dataAccess.GetIdOfLastInsertion();
             return role;
         }
     }

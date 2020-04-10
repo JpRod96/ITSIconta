@@ -54,9 +54,11 @@ namespace PersistenceRepositories
 
         private List<Repository> InitializedRepositories()
         {
-            List<Repository> repositories = new List<Repository>();
-            repositories.Add(new RoleRepository(this));
-            repositories.Add(new UserRepository(this));
+            List<Repository> repositories = new List<Repository>
+            {
+                new RoleRepository(this),
+                new UserRepository(this)
+            };
             return repositories;
         }
 
@@ -95,8 +97,22 @@ namespace PersistenceRepositories
             }
             catch (FileNotFoundException e)
             {
-                Console.WriteLine("Database does not exist");
+                Console.WriteLine(e.ToString() + ", database does not exist");
             }
+        }
+
+        public int GetIdOfLastInsertion()
+        {
+            SqliteCommand Command = new SqliteCommand
+            {
+                Connection = DB,
+                CommandText = "SELECT * " +
+                            "FROM history " +
+                            "ORDER BY id DESC " +
+                            "LIMIT 1"
+            };
+            Int64 LastRowID64 = (Int64)Command.ExecuteScalar();
+            return (int)LastRowID64;
         }
     }
 }

@@ -8,6 +8,7 @@ namespace PersistenceRepositories
 {
     public class UserRepository : Repository
     {
+
         public UserRepository(DataAccess dataAccess) : base(dataAccess)
         {
             base.TABLE_CREATION_COMMAND = "CREATE TABLE IF NOT EXISTS users" +
