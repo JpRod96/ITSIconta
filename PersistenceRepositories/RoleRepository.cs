@@ -1,4 +1,5 @@
 ﻿using Entities.User;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,9 +17,13 @@ namespace PersistenceRepositories
                                         ")";
         }
 
-        public Role Save(Role user)
+        public Role Save(Role role)
         {
-            return user;
+            SqliteCommand insertCommand = new SqliteCommand();
+            insertCommand.CommandText = "INSERT INTO roles (name) VALUES (@name);";
+            insertCommand.Parameters.AddWithValue("@name", role.Name);
+            SqliteDataReader query = dataAccess.ExecuteSQLCommand(insertCommand);
+            return role;
         }
     }
 }

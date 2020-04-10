@@ -30,6 +30,7 @@ namespace PersistenceRepositories
             await ApplicationData.Current.LocalFolder.CreateFileAsync(DBName, CreationCollisionOption.OpenIfExists);
             GetConnection();
             CreateTables();
+            Seed();
         }
 
         private void CreateTables()
@@ -39,6 +40,16 @@ namespace PersistenceRepositories
             {
                 repository.CreateTable();
             }
+        }
+
+        private void Seed()
+        {
+            Seeder seeder = new Seeder()
+            {
+                roleRepository = new RoleRepository(this),
+                userRepository = new UserRepository(this)
+            };
+            seeder.Seed();
         }
 
         private List<Repository> InitializedRepositories()
@@ -69,6 +80,7 @@ namespace PersistenceRepositories
         {
             SqliteDataReader output;
             DB.Open();
+            SQLCommand.Connection = DB;
             output = SQLCommand.ExecuteReader();
             DB.Close();
             return output;
